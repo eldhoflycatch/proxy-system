@@ -2,40 +2,48 @@
 ## Overview
 The proxy-system is a multi-module Java application built using Spring Boot and Netty. It implements a two-tier proxy architecture:
 
-Ship Proxy (running on localhost:8080): Accepts incoming HTTP requests (e.g., from curl) and forwards them to the Offshore Proxy.
-Offshore Proxy (running on localhost:8081): Receives requests from the Ship Proxy, fetches content from the target URL (e.g., http://example.com), and returns the response back through the chain.
-This project serves as a basic example of a proxy chain, currently supporting HTTP GET requests and returning HTML content from target websites.
+- Ship Proxy (running on localhost:8080): Accepts incoming HTTP requests (e.g., from curl) and forwards them to the Offshore Proxy.
+- Offshore Proxy (running on localhost:8081): Receives requests from the Ship Proxy, fetches content from the target URL (e.g., http://example.com), and returns the response back through the chain.
+- This project serves as a basic example of a proxy chain, currently supporting HTTP GET requests and returning HTML content from target websites.
 
 ## Prerequisites
-Java 17: Ensure Java 17 is installed (java -version should show 17.x.x).
-Maven 3.6+: Required for building the project (mvn -version to verify).
-Network Access: Ensure your system can reach target URLs (e.g., http://example.com) for testing.
-Available Ports: Ensure ports 8080 (Ship Proxy) and 8081 (Offshore Proxy) are free.
+- Java 17: Ensure Java 17 is installed (java -version should show 17.x.x).
+- Maven 3.6+: Required for building the project (mvn -version to verify).
+- Network Access: Ensure your system can reach target URLs (e.g., http://example.com) for testing.
+- Available Ports: Ensure ports 8080 (Ship Proxy) and 8081 (Offshore Proxy) are free.
 
 ## Setup Instructions
-1. Clone or Set Up the Project
-   Clone the repository if hosted (e.g., git clone <repository-url>), or manually create the project structure and copy the provided files into their respective locations.
-2. Build the Project
-   Navigate to the root directory (proxy-system) and build using Maven:
+1. - Clone or Set Up the Project
+   - Clone the repository if hosted (e.g., git clone <repository-url>), or manually create the project structure and copy the provided files into their respective locations.
+2. - Build the Project
+   - Navigate to the root directory (proxy-system) and build using Maven:
+   ```bash
    cd proxy-system
    mvn clean install
-3. Start the Offshore Proxy
-   Start the Offshore Proxy first, as the Ship Proxy depends on it:
+    ```
+3. - Start the Offshore Proxy
+   - Start the Offshore Proxy first, as the Ship Proxy depends on it:
+   ```bash
    cd offshore-proxy
    mvn spring-boot:run
-   Expected Output: Offshore Proxy started on port 8081.
-4. Start the Ship Proxy
-   In a separate terminal, start the Ship Proxy:
+    ```
+   ## Expected Output: Offshore Proxy started on port 8081.
+4. - Start the Ship Proxy
+   - In a separate terminal, start the Ship Proxy:
+   ```bash
    cd ship-proxy
    mvn spring-boot:run
-5. Expected Output:
-   Connected to Offshore Proxy at localhost:8081
-   Ship Proxy started on port 8080
-6. Usage
+    ```
+   ## Expected Output:
+   - Connected to Offshore Proxy at localhost:8081
+   - Ship Proxy started on port 8080
+6. ## Usage
    Test the Proxy
    Use curl to send a request through the proxy chain to a target HTTP URL (e.g., http://example.com):
+   ```bash
    curl -v -x http://localhost:8080 http://example.com
-7. Expected Output:
+    ```
+7. ## Expected Output:
     *   Trying [::1]:8080...
 * Connected to localhost (::1) port 8080
 > GET http://example.com/ HTTP/1.1
