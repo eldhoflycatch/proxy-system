@@ -49,8 +49,8 @@ public class OffshoreProxyServer {
     private void handleClient(Socket clientSocket) {
         try (BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
              PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true)) {
-            String request = in.readLine();
-            if (request != null) {
+            String request;
+            while ((request = in.readLine()) != null && !request.isEmpty()) {
                 String response = handleRequest(request);
                 out.println(response);
             }
@@ -67,15 +67,11 @@ public class OffshoreProxyServer {
             String method = parts[0];
             String url = parts[1].split("\n")[0];
 
-            if ("CONNECT".equals(method)) {
-                return "HTTP/1.1 200 Connection established\n\n";
-            }
-
             // Remove redundant 'http://' if present
-            if (url.startsWith("http://http://") || url.startsWith("https://http://")) {
+            if (url.startsWith("http://http://")) {
                 url = url.replaceFirst("http://", "");
-            } else if (!url.startsWith("http://") && !url.startsWith("https://")) {
-                url = "http://" + url; // Add http:// if no protocol is specified
+            } else if (!url.startsWith("http://")) {
+                url = "http://" + url; // Add http:// if no protocol
             }
 
             System.out.println("Forwarding to: " + url);

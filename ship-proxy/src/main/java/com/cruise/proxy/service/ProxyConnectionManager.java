@@ -1,6 +1,7 @@
 package com.cruise.proxy.service;
 
 import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -10,15 +11,15 @@ import java.net.Socket;
 @Component
 public class ProxyConnectionManager {
 
-    @Value("${offshore.proxy.host:localhost}")
+    @Value("${offshore.proxy.host:offshore-proxy}")
     private String offshoreProxyHost;
 
     @Value("${offshore.proxy.port:8081}")
     private int offshoreProxyPort;
 
-    protected Socket socket;
-    protected PrintWriter out;
-    protected BufferedReader in;
+    private Socket socket;
+    private PrintWriter out;
+    private BufferedReader in;
 
     @PostConstruct
     public void init() throws IOException {
@@ -41,5 +42,17 @@ public class ProxyConnectionManager {
         }
         System.out.println("Received from Offshore Proxy: " + response.toString());
         return response.toString();
+    }
+
+    @PreDestroy
+    public void shutdown() {
+        try {
+            if (socket != null && !socket.isClosed()) {
+                socket.close();
+                System.out.println("Closed connection to Offshore Proxy");
+            }
+        } catch (IOException e) {
+            System.err.println("Error closing socket: " + e.getMessage());
+        }
     }
 }

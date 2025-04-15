@@ -52,20 +52,19 @@ public class ProxyRequestHandler {
         System.out.println("Ship Proxy started on port 8080");
     }
 
-    private void processQueue() {
+    // Synchronized method to ensure sequential processing
+    private synchronized void processQueue() {
         while (running) {
             try {
                 RequestTask task = requestQueue.take();
                 System.out.println("Processing request: " + task.request);
                 String response = connectionManager.sendRequest(task.request);
 
-                // Parse the response to extract status, headers, and body
                 String[] responseParts = response.split("\n\n", 2);
                 String headers = responseParts[0];
                 String body = responseParts.length > 1 ? responseParts[1] : "";
                 HttpResponseStatus status = HttpResponseStatus.OK;
 
-                // Parse the status line
                 String[] headerLines = headers.split("\n");
                 for (String line : headerLines) {
                     if (line.startsWith("HTTP/1.1")) {
@@ -76,8 +75,7 @@ public class ProxyRequestHandler {
                 }
 
                 DefaultFullHttpResponse httpResponse = new DefaultFullHttpResponse(
-                        HttpVersion.HTTP_1_1,
-                        status,
+                        HttpVersion.HTTP_1_1, status,
                         Unpooled.wrappedBuffer(body.getBytes(StandardCharsets.UTF_8))
                 );
                 httpResponse.headers().set(HttpHeaderNames.CONTENT_TYPE, "text/html");
@@ -97,7 +95,7 @@ public class ProxyRequestHandler {
                 break;
             } catch (Exception e) {
                 System.err.println("Error processing request: " + e.getMessage());
-                // Send an error response only if a task was dequeued
+                e.printStackTrace();
                 RequestTask errorTask = requestQueue.peek();
                 if (errorTask != null) {
                     DefaultFullHttpResponse errorResponse = new DefaultFullHttpResponse(
@@ -116,12 +114,8 @@ public class ProxyRequestHandler {
     @PreDestroy
     public void shutdown() {
         running = false;
-        if (bossGroup != null) {
-            bossGroup.shutdownGracefully();
-        }
-        if (workerGroup != null) {
-            workerGroup.shutdownGracefully();
-        }
+        if (bossGroup != null) bossGroup.shutdownGracefully();
+        if (workerGroup != null) workerGroup.shutdownGracefully();
         System.out.println("Ship Proxy shutdown complete");
     }
 

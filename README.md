@@ -37,11 +37,20 @@ The proxy-system is a multi-module Java application built using Spring Boot and 
    ## Expected Output:
    - Connected to Offshore Proxy at localhost:8081
    - Ship Proxy started on port 8080
+   ## Test multiple
+   - Test Sequential Processing
+     To verify that requests are handled sequentially (one by one) when sent in parallel:
+
+macOS/Linux:
+bash
+
+Copy
+curl -v -x http://localhost:8080 http://example.com &
+curl -v -x http://localhost:8080 http://example.com &
+curl -v -x http://localhost:8080 http://example.com &
 6. ## Usage
    Test the Proxy
    Use curl to send a request through the proxy chain to a target HTTP URL (e.g., http://example.com):
-   ```bash
-   curl -v -x http://localhost:8080 http://example.com
     ```
 7. ## Expected Output:
     *   Trying [::1]:8080...
